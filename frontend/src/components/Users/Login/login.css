@@ -1,0 +1,9 @@
+.ant-form-item-required {
+    text-align: center;
+}
+form.ant-form {
+    margin: auto !important;
+}
+.ant-row.ant-form-item-row {
+    display: inline-flex !important;
+}
