@@ -6,11 +6,19 @@ import { UserContext } from '../../Users/UserContext/UserContext';
 
 //antd
 import { Menu } from 'antd';
+import axios from 'axios';
 
 
 const Header = () => {
   // const [username, setUsername] = useState(null)
-  const {user} = useContext(UserContext);
+  const {user, setUser} = useContext(UserContext);
+
+  const logout = async() => {
+    await axios.post('http://localhost:5000/api/logout',{}, {withCredentials:true})
+    .then(()=> {
+      setUser(null);
+    }).catch(err => console.log(err));
+  }
 return (
   <div className='Header'>
     <div className='userName'>
@@ -20,12 +28,20 @@ return (
     </div>
     <nav className='sitePages'>
         <ul>
-          <li>
-            <Link to="/register">Registration</Link>
-          </li>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
+          {!user ?(
+          <>
+            <li>
+              <Link to="/register">Registration</Link>
+            </li>
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
+          </>
+          ): 
+            <li>
+              <Link to="/home" onClick={logout}>Sign out</Link>
+            </li>
+          }
           <li>
             <Link to="/">Home</Link>
           </li>

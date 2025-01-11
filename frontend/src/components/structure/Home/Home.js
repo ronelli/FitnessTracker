@@ -19,7 +19,9 @@ const Home = () => {
           return axios.post('http://localhost:5000/api/lastWorkout',{userId:$id})
         }
       }).then((workoutRes)=>{
-        setLastWorkout(workoutRes.data);
+        if(workoutRes.data){
+          setLastWorkout(workoutRes.data);
+        }
       })
       .catch((err)=>{
         console.log(err.message);

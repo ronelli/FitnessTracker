@@ -36,6 +36,16 @@ const getUser = async (req, res) =>{
     }
 }
 
+const userLogout = async (req, res) => {
+    try {
+        res.clearCookie('authToken', {path: '/'});
+        res.status(200).send('Logged out');
+    }   
+    catch(err){
+        res.status(400).json({error:err.message});
+    }
+}
+
 const getUserFromToken = async (req, res) => {
     try {
         const token = req;
@@ -70,4 +80,4 @@ const deleteUsers = async (req, res) => {
 }
 
 
-export default {createUser, getUsers, getUser, deleteUsers, getUserFromToken};
+export default {createUser, getUsers, getUser, userLogout,deleteUsers, getUserFromToken};

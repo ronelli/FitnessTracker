@@ -12,7 +12,6 @@ export const UserProvider = ({children}) => {
                 const res = await axios.get('http://localhost:5000/me',{
                     withCredentials: true
                 });
-                debugger
                 setUser(res.data.name);
             }
             catch(err){

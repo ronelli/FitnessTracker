@@ -1,26 +1,32 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { Button, Form, Input, Radio } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../../Users/UserContext/UserContext';
 
 const Schedule = () => {
   const [form] = Form.useForm();
 
   const navigate = useNavigate();
   const [workout, setSelectedWorkout] = useState('');  // State to store the selected workout name
-  const workoutOptions = ['Gym', 'CrossFit', 'Gymnastics', 'Running', 'Climbing', 'Other'];  // Example workout options
-
+  const [workoutTypes, setWorkoutTypes] = useState([]);
 
   const [duration, setDuration] = useState('');
   const [date, setDate] = useState('');
-
+  const { setUser } = useContext(UserContext);
   useEffect(()=>{
     axios.get('http://localhost:5000/api/me',{withCredentials:true})
     .then((res)=>{
-        return
+        axios.get('http://localhost:5000/api/workoutType').then((res) =>{
+          setWorkoutTypes(res.data);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
     })
     .catch((err)=>{
+        setUser(null);
       alert('Please log in again');
       navigate('/login');
     })
@@ -29,7 +35,7 @@ const Schedule = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const workoutObj = {
-      workout,
+      workoutType:workout,
       duration,
       date
     }
@@ -38,7 +44,6 @@ const Schedule = () => {
       params: { date }, // Only send the date as a query parameter
       withCredentials: true, // Include the cookie for authentication
     }).then((res)=>{
-      debugger
       if(res.data.exists){
         return alert(res.data.message);
       }
@@ -72,8 +77,8 @@ const Schedule = () => {
           onChange={(e) => setSelectedWorkout(e.target.value)}  // Update state when a workout is selected
         >
           <option value="">--Select Workout--</option> {/* Placeholder */}
-          {workoutOptions.map((workout, index) => (
-            <option key={index} value={workout}>{workout}</option>
+          {workoutTypes?.map((workout, index) => (
+            <option key={workout._id} value={workout._id}>{workout.name}</option>
           ))}
         </select>
         <div>
