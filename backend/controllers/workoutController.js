@@ -6,6 +6,7 @@ const setWorkout = async (req, res) => {
         const workoutData = req.body; 
         console.log(workoutData);
         workoutData.userId = req.userId;
+        console.log(workoutData);
         const newWorkout = new Workout(workoutData);
         await newWorkout.save();
         res.status(200).json('Your workout was successfully recorded')
@@ -48,7 +49,9 @@ const getWorkouts = async (req, res) => {
 
 const getUserWorkouts = async (req, res) => {
     try {
-        const {userId} = req.body; //Destructure req.body object
+        console.log(req.query);
+        const {userId} = req.query; //Destructure req.body object
+        console.log(userId);
         const workouts = await Workout.find({ userId }).populate('workoutType','name').sort({ date: -1 }).exec();
         if(!workouts.length){
             return res.status(200).json([]);
@@ -59,6 +62,8 @@ const getUserWorkouts = async (req, res) => {
         res.status(400).json({error: err.message});
     }
 }
+
+
 
 const getLastWorkout = async( req, res) => {
     try {
@@ -80,6 +85,7 @@ const getLastWorkout = async( req, res) => {
 
 const editWorkout = async (req, res) => {
     try {
+        console.log(req.body);
         const {_id, date, workoutType, duration} = req.body;
         if (!date || !workoutType || !duration) {
             return res.status(400).json({ error: "All fields (date, workoutType, duration) are required" });
@@ -123,4 +129,28 @@ const deleteWorkout = async (req, res) => {
         res.status(400).json({error: err.message});
     }
 }
-export default {setWorkout, getWorkout, getWorkouts, getUserWorkouts, deleteWorkouts, editWorkout, deleteWorkout ,getLastWorkout};
+
+
+//get history workouts:
+const getWorkoutHistory = async (req, res) => {
+    try {
+        const workoutHistory = await Workout.find({isCompleted:true});
+        res.status(200).json(workoutHistory);
+    }
+    catch(err) {
+        res.status(400).json({error:err.message});
+    }
+}
+
+const getUserWorkoutHistory = async (req, res) => {
+    try {
+        const {userId} = req.query;
+        const filter = {userId, isCompleted:true}
+        const completedWorkouts = await Workout.find(filter);
+        res.status(200).json(completedWorkouts);
+    }
+    catch(err) {
+        res.status(400).json({error:err.message});
+    }
+}
+export default {setWorkout, getWorkout, getWorkouts, getUserWorkouts, deleteWorkouts, editWorkout, deleteWorkout ,getLastWorkout, getWorkoutHistory, getUserWorkoutHistory};

@@ -1,27 +1,24 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-// import Routes from '../../Routes/Routes/Routes';
 import {Link} from 'react-router-dom';
+import axios from 'axios';
 import { UserContext } from '../../Users/UserContext/UserContext';
 
-//antd
-import { Menu } from 'antd';
-import axios from 'axios';
+const Header: React.FC = () => {
+  const {user, setUser} = useContext(UserContext); 
 
-
-const Header = () => {
-  // const [username, setUsername] = useState(null)
-  const {user, setUser} = useContext(UserContext);
-
-  const logout = async() => {
-    await axios.post('http://localhost:5000/api/logout',{}, {withCredentials:true})
-    .then(()=> {
+  const logout = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/logout',{}, {withCredentials:true});
       setUser(null);
-    }).catch(err => console.log(err));
+    }
+    catch(err) {
+      console.log(err);
+    }
   }
-return (
-  <div className='Header'>
-    <div className='userName'>
+  return (
+    <div className='Header'>
+      <div className='userName'>
         {user ? <span>Hello, {user} </span> : <span>Hello, Guest</span>}
       <span>
       </span>
@@ -49,17 +46,15 @@ return (
             <Link to="/new-workout">Schedule a Workout</Link>
           </li>
           <li>
-            <Link to="/list">Workout list</Link>
+            <Link to="/calendar">Calendar</Link>
+          </li>
+          <li>
+            <Link to="/dashboard">Dashboard</Link>
           </li>
         </ul>
       </nav>
-    {/* <BrowserRouter>
-    <Routes></Routes>
-    </BrowserRouter> */}
-  </div>
-)};
-
-Header.propTypes = {};
-
+    </div>
+  )
+}
 
 export default Header;

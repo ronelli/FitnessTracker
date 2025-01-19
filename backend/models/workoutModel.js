@@ -11,10 +11,27 @@ const workoutSchema = new mongoose.Schema({
         ref:'WorkoutType',
         required:true
     },
-    'duration':{type: Number, required: true},
+    'duration':{type: Number, required: true, min: 0},
     'calories':{type: Number, required: false},
-    'date': {type:Date, default: Date.now()}
-},{ versionKey: false });
+    'date': {type:Date, required: true},
+    'isCompleted': {type: Boolean, default: false},
+    'rate': {
+        type:Number,
+        required: false,
+        min: 1,
+        max: 5
+    },
+    'intensity': {
+        type: String,
+        enum: ['low','medium','high'],
+        required: false
+    },
+    'notes': {
+        type: String,
+        required: false,
+        maxlength: 500
+    }
+},{ versionKey: false, timestamps: true});
 
 const Workout = mongoose.model('Workout', workoutSchema);
 

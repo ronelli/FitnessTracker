@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 app.use(cookieParser())
 app.use(cors({
     origin:'http://localhost:3000',
-    methods:'GET,POST,DELETE',
+    methods:'GET,POST,DELETE, PUT',
     credentials:true
 }));
 app.use(express.json());

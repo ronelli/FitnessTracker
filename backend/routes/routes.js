@@ -5,7 +5,7 @@ import workoutController from '../controllers/workoutController.js';
 import workoutTypeController from '../controllers/workoutTypeController.js';
 import authenticateToken from '../middleware/authToken.js';
 const { createUser, getUsers, getUser,userLogout, deleteUsers,getUserFromToken } = userController;
-const {getUserWorkouts, getWorkouts, setWorkout, getWorkout ,getLastWorkout, editWorkout, deleteWorkouts, deleteWorkout} = workoutController;
+const {getUserWorkouts, getWorkouts, setWorkout, getWorkout ,getLastWorkout, editWorkout, deleteWorkouts, deleteWorkout, getWorkoutHistory, getUserWorkoutHistory} = workoutController;
 const {getWorkoutTypes, setWorkoutType, deleteWorkoutTypes} = workoutTypeController;
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.post('/logout', userLogout);
 
 //workout routes
 router.post('/workout', authenticateToken, setWorkout);
-router.post('/user_workouts',getUserWorkouts)
+router.get('/user_workouts', getUserWorkouts)
 router.post('/lastWorkout',getLastWorkout);
 router.get('/getWorkout',authenticateToken,getWorkout); //checking if another workout scheduled on same date.
 router.get('/workouts',getWorkouts);
@@ -29,6 +29,13 @@ router.delete('/userWorkout',deleteWorkout);
 
 //workout type routes
 router.post('/workoutType',setWorkoutType);
-router.get('/workoutType',getWorkoutTypes);
+router.get('/workoutTypes',getWorkoutTypes);
 router.delete('/workoutType',deleteWorkoutTypes);
+
+
+//workout history
+router.get('/workout-history',getWorkoutHistory);
+router.get('/user-history' ,getUserWorkoutHistory);
+
 export default router;
+

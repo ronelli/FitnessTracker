@@ -9,12 +9,18 @@ import './login.css'
 import { Button, Form, Input } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 
-const Login = () => {
+
+interface LoginValues {
+  email:string,
+  password:string
+}
+
+const Login: React.FC = () =>{
 
   const {setUser} = useContext(UserContext);
   const navigate = useNavigate();
 
-  const onFinish = (values) => {
+  const onFinish = (values: LoginValues) => {
     const {email, password } = values;
     const loginDetails = {email, password};
     axios.post('http://localhost:5000/api/user', loginDetails, {withCredentials:true})
@@ -27,7 +33,7 @@ const Login = () => {
       .catch(err=>console.log(err.response?.data || err.message));
   };
 
-  const onFinishFailed = (errorInfo) => {
+  const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
     alert('Please fill in all required fields correctly.');
   };

@@ -3,22 +3,32 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { Button, Form, Input, Radio } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../../../Users/UserContext/UserContext';
+import { UserContext } from '../../Users/UserContext/UserContext';
+import { WorkoutTypes } from '../../../types/WorkoutType';
 
-const Schedule = () => {
+
+interface workoutValues {
+  workoutType: WorkoutTypes;
+  duration: number;
+  date: string;
+}
+
+const Schedule: React.FC = () =>{
+  
+  const navigate = useNavigate();
   const [form] = Form.useForm();
 
-  const navigate = useNavigate();
-  const [workout, setSelectedWorkout] = useState('');  // State to store the selected workout name
-  const [workoutTypes, setWorkoutTypes] = useState([]);
+  const [workout, setSelectedWorkout] = useState<WorkoutTypes | null>(null);  // State to store the selected workout name
+  const [workoutTypes, setWorkoutTypes] = useState<WorkoutTypes[]>([]);
+  const [duration, setDuration] = useState<number | ''>('');
+  const [date, setDate] = useState<string>('');
 
-  const [duration, setDuration] = useState('');
-  const [date, setDate] = useState('');
   const { setUser } = useContext(UserContext);
+
   useEffect(()=>{
     axios.get('http://localhost:5000/api/me',{withCredentials:true})
     .then((res)=>{
-        axios.get('http://localhost:5000/api/workoutType').then((res) =>{
+        axios.get('http://localhost:5000/api/workoutTypes').then((res) =>{
           setWorkoutTypes(res.data);
         })
         .catch((err) => {
@@ -32,14 +42,17 @@ const Schedule = () => {
     })
   },[navigate])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const workoutObj = {
+    debugger
+    if (!workout || !duration || !date) {
+      return alert("All fields are required!");
+    }
+    const workoutObj:workoutValues = {
       workoutType:workout,
-      duration,
+      duration:Number(duration),
       date
     }
-    // const dateObject = new Date(date).toISOString().split('T')[0];
     axios.get('http://localhost:5000/api/getWorkout', {
       params: { date }, // Only send the date as a query parameter
       withCredentials: true, // Include the cookie for authentication
@@ -73,12 +86,16 @@ const Schedule = () => {
       <label>Choose workout:</label><br/>
       <select
           required
-          value={workout}
-          onChange={(e) => setSelectedWorkout(e.target.value)}  // Update state when a workout is selected
+          value={workout?.id}
+          onChange={(e) => {
+            const selectedWorkout = workoutTypes.find((w) => w.name === e.target.value);
+            setSelectedWorkout(selectedWorkout || null)}  // Update state when a workout is selected
+          } 
+            
         >
           <option value="">--Select Workout--</option> {/* Placeholder */}
           {workoutTypes?.map((workout, index) => (
-            <option key={workout._id} value={workout._id}>{workout.name}</option>
+            <option key={workout.id} value={workout.id}>{workout.name}</option>
           ))}
         </select>
         <div>
@@ -86,7 +103,7 @@ const Schedule = () => {
           <input type="number" 
           required
           value={duration}
-          onChange={(e) => setDuration(e.target.value)} />
+          onChange={(e) => setDuration(Number(e.target.value))} />
         </div>
         <div>
           <label>Date</label>
@@ -96,25 +113,8 @@ const Schedule = () => {
         </div>
         <button type="submit">submit</button>
     </form>
-      {/* <Form
-      form={form}
-    >
-      <Form.Item label="Field A">
-        <Input placeholder="input placeholder" />
-      </Form.Item>
-      <Form.Item label="Field B">
-        <Input placeholder="input placeholder" />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary">Submit</Button>
-      </Form.Item>
-    </Form> */}
-      {/* <WorkoutData></WorkoutData> */}
     </div>
   );
 }
-
-Schedule.propTypes = {};
-
 
 export default Schedule;
